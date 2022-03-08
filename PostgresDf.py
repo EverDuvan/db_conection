@@ -1,13 +1,15 @@
+import hashlib
 import pandas as pd
 from sqlalchemy.engine import create_engine
 from dotenv import load_dotenv
 import os
 import xlsxwriter
+import openpyxl
 load_dotenv()
                      
 
 class postgresToDf:
-    """ [Download data from postgres to a dataframe]
+    """ [Download data from postgres to dataframe]
 
     parameters
     ----------
@@ -24,7 +26,7 @@ class postgresToDf:
             pandas df of a table in postgres
     """    
 
-    def __init__(self, credentials, table, column=[]):
+    def __init__(self, table, credentials='',  column=[]):
 
         self._credentials = credentials
         self._table = table
@@ -84,6 +86,22 @@ class postgresToDf:
         return df
 
     
+    @property
+    def get_xlsx_df(self):
+        if self._table != '':
+            df = pd.read_excel(self._table, engine='openpyxl', na_filter = False)
+        else:
+            print('File not found')
+            df = pd.DataFrame()
+        return df
+        
+    @property
+    def get_secret(secret_file: str) -> str:
+        path = "/run/secrets/{}".format(secret_file)
+        with open(path) as f:
+            secret = f.readline().strip()
+        return secret
+    
 
     @property
     def table_name(self):
@@ -101,8 +119,8 @@ class DfToPostgres(postgresToDf):
     dataframe: pandas-df
         A pandas df whith exact table and columns in postgres 
     """    
-    def __init__(self, dataframe, table='', credentials=''):
-        super().__init__(credentials, table)
+    def __init__(self, dataframe, table, credentials=''):
+        super().__init__(table, credentials)
 
         self._dataframe = dataframe
 
@@ -133,15 +151,14 @@ class DfToPostgres(postgresToDf):
             self._dataframe.to_sql(self._table, engine, schema='public', if_exists='replace', index=False)
             print ('¡Done!')
 
-    @property
-    def df_2_xl(self) -> None:
+    def df_2_xl(self, df) -> None:
         if self._table == '':
             self._table = 'file'
         full_path = "{}.xlsx".format(self._table)
         with pd.ExcelWriter(full_path,
                             engine='xlsxwriter',
                             options={'strings_to_urls': False}) as writer:
-            self._dataframe.to_excel(writer)
+            df.to_excel(writer,index=False)
             print ('\nxlsx created !')
 
     @property
