@@ -8,7 +8,7 @@ import openpyxl
 load_dotenv()
                      
 
-class postgresToDf:
+class PGToDf:
     """ [Download data from postgres to dataframe]
 
     parameters
@@ -94,24 +94,35 @@ class postgresToDf:
             print('File not found')
             df = pd.DataFrame()
         return df
-        
+
+           
     @property
     def get_secret(secret_file: str) -> str:
         path = "/run/secrets/{}".format(secret_file)
         with open(path) as f:
             secret = f.readline().strip()
         return secret
-    
 
     @property
     def table_name(self):
         print (f'table: {self._table}')
 
+    @staticmethod
+    def df_2_xl(table,df) -> None:
+        if table == '':
+            table = 'file'
+        full_path = "{}.xlsx".format(table)
+        with pd.ExcelWriter(full_path,
+                            engine='xlsxwriter',
+                            options={'strings_to_urls': False}) as writer:
+            df.to_excel(writer,index=False)
+            print ('\nxlsx created !')
+
  
-# ************************** DfToPostgres *********************************
+# ************************** DfToPg *********************************
 
 
-class DfToPostgres(postgresToDf):
+class DfToPG(PGToDf):
     """ [upload dataframe to postgres]
 
     parameter
@@ -151,19 +162,9 @@ class DfToPostgres(postgresToDf):
             self._dataframe.to_sql(self._table, engine, schema='public', if_exists='replace', index=False)
             print ('¡Done!')
 
-    def df_2_xl(self, df) -> None:
-        if self._table == '':
-            self._table = 'file'
-        full_path = "{}.xlsx".format(self._table)
-        with pd.ExcelWriter(full_path,
-                            engine='xlsxwriter',
-                            options={'strings_to_urls': False}) as writer:
-            df.to_excel(writer,index=False)
-            print ('\nxlsx created !')
-
     @property
     def decode(self) -> pd.DataFrame():
-        decodeURLs = {'%3D': '=', '%23': '#', '%20': ' ', '%27': '\'', '%27': '\"'}
+        decodeURLs = {'%3D': '=', '%23': '#', '%20': ' ', '%27': '\'', '%22': '\"'}
         for badchar, decoded in decodeURLs.items():
             self._dataframe['URL'] = self._dataframe['URL'].apply(lambda x: x.replace(badchar, decoded))
         print ('decode done!')
@@ -171,10 +172,23 @@ class DfToPostgres(postgresToDf):
         
     @property
     def encode(self) -> pd.DataFrame():
-        encodeURLs = {'=': '%3D', '#': '%23', ' ': '%20', '\'' : '%27', '\"' : '%27'}
+        encodeURLs = {'=': '%3D', '#': '%23', ' ': '%20', '\'' : '%27', '\"' : '%22'}
         for badchar, encoded in encodeURLs.items():
             self._dataframe['URL'] = self._dataframe['URL'].apply(lambda x: x.replace(badchar, encoded))
         print ('encode done!')
         return self._dataframe
+        
+    @property
+    def replace_chars(self):
+        replaceInString = {'á':'a','é':'e','í':'i','ó':'o','ú':'u',
+                       'Á':'A','É':'E','Í':'I','Ó':'O','Ú':'U',
+                       'À':'A','È':'E','Ì':'I','Ò':'O','Ù':'U',
+                       'Ä':'A','Ë':'E','Ï':'I','Ö':'O','Ü':'U',}
+        for column in self._table:
+            for bad_char, normal_char in replaceInString.items():
+                self._dataframe[column] = self._dataframe[column].apply(lambda x: str(x).replace(bad_char, normal_char))
+            # dataframe[column] = dataframe[column].apply(lambda x: str(x).strip())
+        return self._dataframe
+        
         
 
