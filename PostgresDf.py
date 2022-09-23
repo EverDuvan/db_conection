@@ -26,7 +26,7 @@ class PGToDf:
             pandas df of a table in postgres
     """    
 
-    def __init__(self, table, credentials='',  column=[]):
+    def __init__(self, table, credentials='', column=[]):
 
         self._credentials = credentials
         self._table = table
@@ -60,32 +60,16 @@ class PGToDf:
         self._column = column      
 
     @property
-    def dataframe(self):
-        return self._dataframe
-
-    @dataframe.setter
-    def dataframe(self, dataframe):
-        self._dataframe = dataframe  
-    
-    def load_df(self,DB_USER: str, DB_PASS: str, DB_IP: str,
-                    DB_PORT: int, DB_NAME: str, query: str) -> pd.DataFrame():
-        engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(DB_USER, DB_PASS, DB_IP, DB_PORT, DB_NAME))
-        #conexion = create_engine(engine)
-        query='SELECT * from {}'.format(self._table)
-        dataframe = pd.read_sql_query(query, engine)
-        return dataframe
-    
-    @property
     def get_df(self):
         a = eval(os.getenv("basesdedatos"))
         credentials=a[self._credentials]
-        query='SELECT * from {}'.format(self._table)
-        df = self.load_df(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'], credentials['DB_PORT'], credentials['DB_NAME'], query)
+        engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'], credentials['DB_PORT'], credentials['DB_NAME']))
+        query= f'SELECT * from {self._table}'
+        df = pd.read_sql_query(query, engine)
         if self._column != []:
             df=df[self._column]
         return df
 
-    
     @property
     def get_xlsx_df(self):
         if self._table != '':
@@ -98,20 +82,16 @@ class PGToDf:
            
     @property
     def get_secret(secret_file: str) -> str:
-        path = "/run/secrets/{}".format(secret_file)
+        path = f'/run/secrets/{secret_file}'
         with open(path) as f:
             secret = f.readline().strip()
         return secret
 
-    @property
-    def table_name(self):
-        print (f'table: {self._table}')
-
     @staticmethod
-    def df_2_xl(table,df) -> None:
+    def df_2_xl(df,table):
         if table == '':
             table = 'file'
-        full_path = "{}.xlsx".format(table)
+        full_path = f'{table}.xlsx'
         with pd.ExcelWriter(full_path,
                             engine='xlsxwriter',
                             options={'strings_to_urls': False}) as writer:

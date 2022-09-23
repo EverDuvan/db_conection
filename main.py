@@ -1,11 +1,17 @@
 from PostgresDf import *
 
-homologadosdf= PGToDf( 'homologados','data_procesing2')
-homologadosdf=homologadosdf.get_df
-print (f'cantidad datos homologados: {len(homologadosdf)}')
+homologadosdf = PGToDf( 'product_homologated','data_procesing2', 'MARCA').get_df
+print (f'resultado: {homologadosdf}')
+objeto2=PGToDf('table').df_2_xl(homologadosdf,'table')
+
+
+
+#homologadosdf= PGToDf( 'homologados','data_procesing2')
+#homologadosdf=homologadosdf.get_df
+#print (f'cantidad datos homologados: {len(homologadosdf)}')
 #print (f'resultado: {homologadosdf}')
 #print(type(homologadosdf))
-
+''' 
 ready_2_process=PGToDf('ready_2_process.xlsx')
 ready_2_process = ready_2_process.get_xlsx_df
 print (f'cantidad datos ready2process: {len(ready_2_process)}')
@@ -38,3 +44,4 @@ PGToDf.df_2_xl('homovsdev', filtro2)
 
 
 
+ '''
