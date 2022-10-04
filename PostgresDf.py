@@ -3,7 +3,6 @@ import pandas as pd
 from sqlalchemy.engine import create_engine
 from dotenv import load_dotenv
 import os
-import xlsxwriter
 import openpyxl
 load_dotenv()
                      
@@ -26,13 +25,13 @@ class PGToDf:
             pandas df of a table in postgres
     """    
 
-    def __init__(self, table, credentials='', column=[]):
+    def __init__(self, table=[], credentials='', column=[]):
 
         self._credentials = credentials
         self._table = table
         self._column = column
         
-    def __str__(self) -> str:
+    def __str__(self):
         return f'\ndatabase: {self._credentials}\ndb table: {self._table}\ntable columns: {self._column}'
     
     @property
