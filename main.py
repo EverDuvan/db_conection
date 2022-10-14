@@ -1,8 +1,8 @@
 from PostgresDf import *
 
-homologadosdf = PGToDf( 'product_homologated','data_procesing2', 'MARCA').get_df
+homologadosdf = PGToDf( 'homologados','data_procesing2', 'MARCA').get_df
 print (f'resultado: {homologadosdf}')
-objeto2=PGToDf('table').df_2_xl(homologadosdf,'table')
+PGToDf().df_2_xl(homologadosdf,'table')
 
 
 

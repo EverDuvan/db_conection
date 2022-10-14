@@ -26,13 +26,13 @@ class PGToDf:
             pandas df of a table in postgres
     """    
 
-    def __init__(self, table, credentials='', column=[]):
-
+    def __init__(self, table='', credentials='', column=[]):
+    
         self._credentials = credentials
         self._table = table
         self._column = column
         
-    def __str__(self) -> str:
+    def __str__(self):
         return f'\ndatabase: {self._credentials}\ndb table: {self._table}\ntable columns: {self._column}'
     
     @property
@@ -138,8 +138,23 @@ class DfToPG(PGToDf):
         if self._credentials or self._table != '':
             a = eval(os.getenv("basesdedatos"))
             credentials=a[self._credentials]
-            engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'], credentials['DB_PORT'], credentials['DB_NAME']))
+            engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.
+                                            format(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'],
+                                            credentials['DB_PORT'], credentials['DB_NAME']))
             self._dataframe.to_sql(self._table, engine, schema='public', if_exists='replace', index=False)
+            print ('¡Done!')
+
+    @property
+    def send_df_replace_mysql(self):
+        if self._credentials or self._table != '':
+            a = eval(os.getenv("basesdedatos"))
+            credentials=a[self._credentials]
+            engine = create_engine('mysql+mysqlconnector://{}:{}@{}/{}'.
+                                               format(credentials['DB_USER'], credentials['DB_PASS'], 
+                                                      credentials['DB_IP'], credentials['DB_NAME']))
+            #engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'], credentials['DB_PORT'], credentials['DB_NAME']))
+            self._dataframe.to_sql(con=engine, name=self._table, if_exists='replace')
+            #self._dataframe.to_sql(self._table, engine, schema='public', if_exists='replace', index=False)
             print ('¡Done!')
 
     @property
