@@ -1,9 +1,16 @@
 from PostgresDf import *
 
-homologadosdf = PGToDf( 'homologados','data_procesing2', 'MARCA').get_df
-print (f'resultado: {homologadosdf}')
-PGToDf().df_2_xl(homologadosdf,'table')
+#dataframe = PGToDf('retail_information','psql_read').get_df
+#print (f'resultado: {dataframe}')
 
+#PGToDf().df_2_xl(dataframe,'table')
+
+ready_2_process=PGToDf('table.xlsx')
+ready_2_process = ready_2_process.get_xlsx_df
+print (f'cantidad datos ready2process: {len(ready_2_process)}')
+#print(f'excel 2 df : {df}')
+subida = DfToPG(ready_2_process,'retail_information','data_procesing2')
+subida.send_df_replace
 
 
 #homologadosdf= PGToDf( 'homologados','data_procesing2')
@@ -11,12 +18,10 @@ PGToDf().df_2_xl(homologadosdf,'table')
 #print (f'cantidad datos homologados: {len(homologadosdf)}')
 #print (f'resultado: {homologadosdf}')
 #print(type(homologadosdf))
-''' 
-ready_2_process=PGToDf('ready_2_process.xlsx')
-ready_2_process = ready_2_process.get_xlsx_df
-print (f'cantidad datos ready2process: {len(ready_2_process)}')
-#print(f'excel 2 df : {df}')
 
+
+
+'''
 devdf= PGToDf( 'app_product','django_db')
 devdf=devdf.get_df
 print (f'cantidad datos en dev: {len(devdf)}')
