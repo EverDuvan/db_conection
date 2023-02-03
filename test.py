@@ -25,3 +25,8 @@ df_2_xl(filtro , 'filtro')
 print (f'cantidad datos en filtro : {len(filtro)}')
 #print(f'filtro : {filtro}')
 
+filtro2 = x [~x['URL'].isin(y['URL'])] # URL en df 'y' que NO están en URL del df 'x'
+df_2_xl(filtro2 , 'filtro2')
+print (f'cantidad datos en filtro2 : {len(filtro2)}')
+#print(f'filtro : {filtro}')
+
