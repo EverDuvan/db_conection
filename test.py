@@ -1,28 +1,27 @@
-def send_df_append(self):
-    if self._credentials or self._table != '':
-        a = eval(os.getenv("basesdedatos"))
-        credentials=a[self._credentials]
-        engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'], credentials['DB_PORT'], credentials['DB_NAME']))
-        self._dataframe.to_sql(self._table, engine, schema='public', if_exists='append', index=False)
-        print ('¡Done!')
+import pandas as pd 
+import openpyxl
 
-    @property
-    def get_df(self):
-        a = eval(os.getenv("basesdedatos"))
-        credentials=a[self._credentials]
-        engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'], credentials['DB_PORT'], credentials['DB_NAME']))
-        query= f'SELECT * from {self._table}'
-        df = pd.read_sql_query(query, engine)
-        #df = self.load_df(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'], credentials['DB_PORT'], credentials['DB_NAME'], query)
-        if self._column != []:
-            df=df[self._column]
-        return df
+x = 'raw_scrap20.xlsx'
+y = 'raw_scrap28.xlsx'
 
-    def load_df(self,DB_USER: str, DB_PASS: str, DB_IP: str,
-                    DB_PORT: int, DB_NAME: str, query: str) -> pd.DataFrame():
-        engine = create_engine(f'postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_IP}:{DB_PORT}/{DB_NAME}')
-        #query= f'SELECT * from {self._table}'
-        dataframe = pd.read_sql_query(query, engine)
-        return dataframe
+def xltodf(xlsxfile):
+    df = pd.read_excel(xlsxfile , engine='openpyxl', na_filter = False)
+    print (f'cantidad datos en {xlsxfile} : {len(df)}')
+    #print (df)
+    return df
 
-        
+def df_2_xl(df,table):
+    full_path = f'{table}.xlsx'
+    with pd.ExcelWriter(full_path,
+                        engine='xlsxwriter',
+                        engine_kwargs={'options':{'strings_to_urls': False}}) as writer:
+        df.to_excel(writer,index=False)
+
+x = xltodf(x)
+y = xltodf(y)
+
+filtro = y [~y['URL'].isin(x['URL'])] # URL en df 'y' que NO están en URL del df 'x'
+df_2_xl(filtro , 'filtro')
+print (f'cantidad datos en filtro : {len(filtro)}')
+#print(f'filtro : {filtro}')
+

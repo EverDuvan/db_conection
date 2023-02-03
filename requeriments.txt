@@ -3,7 +3,7 @@ SQLAlchemy==1.4.11
 PyMySQL==1.0.2
 openpyxl==3.0.7
 price-parser==0.3.4
-psycopg2-binary==2.8.6
+psycopg2-binary
 cryptography==36.0.0
 XlsxWriter==3.0.2
 python-dotenv

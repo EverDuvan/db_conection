@@ -94,7 +94,7 @@ class PGToDf:
         full_path = f'{table}.xlsx'
         with pd.ExcelWriter(full_path,
                             engine='xlsxwriter',
-                            options={'strings_to_urls': False}) as writer:
+                            engine_kwargs={'options':{'strings_to_urls': False}}) as writer:
             df.to_excel(writer,index=False)
             print ('\nxlsx created !')
 

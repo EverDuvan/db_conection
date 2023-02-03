@@ -5,20 +5,30 @@ from PostgresDf import *
 
 #PGToDf().df_2_xl(dataframe,'table')
 
-ready_2_process=PGToDf('table.xlsx')
-ready_2_process = ready_2_process.get_xlsx_df
-print (f'cantidad datos ready2process: {len(ready_2_process)}')
 #print(f'excel 2 df : {df}')
-subida = DfToPG(ready_2_process,'retail_information','data_procesing2')
-subida.send_df_replace
+#subida = DfToPG(ready_2_process,'retail_information','data_procesing2')
+#subida.send_df_replace
 
+raw28=PGToDf('raw_scrap28.xlsx').get_xlsx_df
+print (f'cantidad datos en raw_scrap28: {len(raw28)}')
+#print (raw28)
+
+raw20=PGToDf('raw_scrap20.xlsx').get_xlsx_df
+print (f'cantidad datos en raw_scrap20: {len(raw20)}')
+#print (raw20)
+
+
+# URL en df 'raw28' que NO están en URL del df raw20
+
+filtro1 = raw28 [~raw28['URL'].isin(raw20['URL'])]
+PGToDf.df_2_xl(filtro1 , '28vs20')
+print(f'devisin: {filtro1}')
 
 #homologadosdf= PGToDf( 'homologados','data_procesing2')
 #homologadosdf=homologadosdf.get_df
 #print (f'cantidad datos homologados: {len(homologadosdf)}')
 #print (f'resultado: {homologadosdf}')
 #print(type(homologadosdf))
-
 
 
 '''
@@ -46,7 +56,6 @@ PGToDf.df_2_xl('homovsdev', filtro2)
 #print (f'resultado: {homologadosdf}')
 #objeto2=DfToPG(homologadosdf,'drogor').df_2_xl(homologadosdf)
 #objeto2.encode
-
 
 
  '''
