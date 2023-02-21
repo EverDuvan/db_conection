@@ -130,7 +130,7 @@ class DfToPG(PGToDf):
             a = eval(os.getenv("basesdedatos"))
             credentials=a[self._credentials]
             engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'], credentials['DB_PORT'], credentials['DB_NAME']))
-            self._dataframe.to_sql(self._table, engine, schema='public', if_exists='append', index=False)
+            self._dataframe.to_sql(self._table, engine, schema='public', if_exists='append', index=False, chunksize = 10)
             print ('¡Done!')
 
     @property
@@ -141,7 +141,7 @@ class DfToPG(PGToDf):
             engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.
                                             format(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'],
                                             credentials['DB_PORT'], credentials['DB_NAME']))
-            self._dataframe.to_sql(self._table, engine, schema='public', if_exists='replace', index=False)
+            self._dataframe.to_sql(self._table, engine, schema='public', if_exists='replace', index=False, chunksize = 10)
             print ('¡Done!')
 
     @property
