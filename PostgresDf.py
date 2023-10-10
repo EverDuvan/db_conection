@@ -36,30 +36,6 @@ class PGToDf:
         return f'\ndatabase: {self._credentials}\ndb table: {self._table}\ntable columns: {self._column}'
     
     @property
-    def table(self):
-        return self._table
-
-    @table.setter
-    def table(self, table):
-        self._table = table
-
-    @property
-    def credentials(self):
-        return self._credentials
-
-    @credentials.setter
-    def credentials(self, credentials):
-        self._credentials = credentials
-
-    @property
-    def column(self):
-        return self._column
-
-    @column.setter
-    def column(self, column):
-        self._column = column      
-
-    @property
     def get_df(self):
         a = eval(os.getenv("basesdedatos"))
         credentials=a[self._credentials]
@@ -79,7 +55,6 @@ class PGToDf:
             df = pd.DataFrame()
         return df
 
-           
     @property
     def get_secret(secret_file: str) -> str:
         path = f'/run/secrets/{secret_file}'
@@ -113,15 +88,6 @@ class DfToPG(PGToDf):
     def __init__(self, dataframe, table, credentials=''):
         super().__init__(table, credentials)
 
-        self._dataframe = dataframe
-
-
-    @property
-    def dataframe(self):
-        return self._dataframe
-
-    @dataframe.setter
-    def dataframe(self, dataframe):
         self._dataframe = dataframe
 
     @property

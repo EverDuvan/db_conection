@@ -1,10 +1,10 @@
 pandas
-SQLAlchemy==1.4.11
-PyMySQL==1.0.2
-openpyxl==3.0.7
-price-parser==0.3.4
+SQLAlchemy
+PyMySQL
+openpyxl
+price-parser
 psycopg2-binary
-cryptography==36.0.0
-XlsxWriter==3.0.2
+cryptography
+XlsxWriter
 python-dotenv
-openpyxl==3.0.7
+openpyxl
