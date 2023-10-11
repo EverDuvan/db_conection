@@ -9,23 +9,6 @@ load_dotenv()
                      
 
 class PGToDf:
-    """ [Download data from postgres to dataframe]
-
-    parameters
-    ----------
-    credentials: str 
-        credentials must to be a dict of dicts in .env archive whith all the credential to conect db
-    table: str 
-        name of table of df 
-    column: list
-        A list o columns of the df, can be blank to obtain all the columns 
-
-    Returns
-    ---------
-        [dataframe] 
-            pandas df of a table in postgres
-    """    
-
     def __init__(self, table='', credentials='', column=[]):
     
         self._credentials = credentials
@@ -39,7 +22,12 @@ class PGToDf:
     def get_df(self):
         a = eval(os.getenv("basesdedatos"))
         credentials=a[self._credentials]
-        engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'], credentials['DB_PORT'], credentials['DB_NAME']))
+        engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format
+                               (credentials['DB_USER'], 
+                                credentials['DB_PASS'], 
+                                credentials['DB_IP'], 
+                                credentials['DB_PORT'], 
+                                credentials['DB_NAME']))
         query= f'SELECT * from {self._table}'
         df = pd.read_sql_query(query, engine)
         if self._column != []:
@@ -95,7 +83,12 @@ class DfToPG(PGToDf):
         if self._credentials or self._table != '':
             a = eval(os.getenv("basesdedatos"))
             credentials=a[self._credentials]
-            engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'], credentials['DB_PORT'], credentials['DB_NAME']))
+            engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format
+                                   (credentials['DB_USER'], 
+                                    credentials['DB_PASS'], 
+                                    credentials['DB_IP'], 
+                                    credentials['DB_PORT'], 
+                                    credentials['DB_NAME']))
             self._dataframe.to_sql(self._table, engine, schema='public', if_exists='append', index=False, chunksize = 10)
             print ('¡Done!')
 
@@ -104,9 +97,12 @@ class DfToPG(PGToDf):
         if self._credentials or self._table != '':
             a = eval(os.getenv("basesdedatos"))
             credentials=a[self._credentials]
-            engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.
-                                            format(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'],
-                                            credentials['DB_PORT'], credentials['DB_NAME']))
+            engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format
+                                   (credentials['DB_USER'], 
+                                    credentials['DB_PASS'], 
+                                    credentials['DB_IP'], 
+                                    credentials['DB_PORT'], 
+                                    credentials['DB_NAME']))
             self._dataframe.to_sql(self._table, engine, schema='public', if_exists='replace', index=False, chunksize = 10)
             print ('¡Done!')
 
@@ -115,9 +111,11 @@ class DfToPG(PGToDf):
         if self._credentials or self._table != '':
             a = eval(os.getenv("basesdedatos"))
             credentials=a[self._credentials]
-            engine = create_engine('mysql+mysqlconnector://{}:{}@{}/{}'.
-                                               format(credentials['DB_USER'], credentials['DB_PASS'], 
-                                                      credentials['DB_IP'], credentials['DB_NAME']))
+            engine = create_engine('mysql+mysqlconnector://{}:{}@{}/{}'.format
+                                   (credentials['DB_USER'], 
+                                    credentials['DB_PASS'], 
+                                    credentials['DB_IP'], 
+                                    credentials['DB_NAME']))
             #engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'], credentials['DB_PORT'], credentials['DB_NAME']))
             self._dataframe.to_sql(con=engine, name=self._table, if_exists='replace')
             #self._dataframe.to_sql(self._table, engine, schema='public', if_exists='replace', index=False)
