@@ -6,9 +6,11 @@ import os
 import xlsxwriter
 import openpyxl
 load_dotenv()
-                     
 
 class PGToDf:
+    """
+    [get dataframe from postgres]
+    """
     def __init__(self, table='', credentials='', column=[]):
     
         self._credentials = credentials
@@ -16,10 +18,17 @@ class PGToDf:
         self._column = column
         
     def __str__(self):
-        return f'\ndatabase: {self._credentials}\ndb table: {self._table}\ntable columns: {self._column}'
+        return f'\ndatabase: 
+        {self._credentials}\ndb table: 
+        {self._table}\ntable columns: 
+        {self._column}'
     
     @property
     def get_df(self):
+        """
+        [get dataframe from postgres]
+        return: pandas-df
+        """
         a = eval(os.getenv("basesdedatos"))
         credentials=a[self._credentials]
         engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format
@@ -36,6 +45,10 @@ class PGToDf:
 
     @property
     def get_xlsx_df(self):
+        """
+        [get dataframe from xlsx]
+        return: pandas-df
+        """
         if self._table != '':
             df = pd.read_excel(self._table, engine='openpyxl', na_filter = False)
         else:
@@ -51,7 +64,16 @@ class PGToDf:
         return secret
 
     @staticmethod
-    def df_2_xl(df,table):
+    def df_2_xl(df,table=''):
+        """
+        [save dataframe to xlsx]
+        parameter
+        ---------
+        df: pandas-df
+            A pandas df whith exact table and columns in postgres 
+        table: str
+            table name in postgres 
+        """
         if table == '':
             table = 'file'
         full_path = f'{table}.xlsx'
@@ -66,13 +88,9 @@ class PGToDf:
 
 
 class DfToPG(PGToDf):
-    """ [upload dataframe to postgres]
-
-    parameter
-    ---------
-    dataframe: pandas-df
-        A pandas df whith exact table and columns in postgres 
-    """    
+    """
+    [save dataframe to postgres]
+    """
     def __init__(self, dataframe, table, credentials=''):
         super().__init__(table, credentials)
 
@@ -89,7 +107,12 @@ class DfToPG(PGToDf):
                                     credentials['DB_IP'], 
                                     credentials['DB_PORT'], 
                                     credentials['DB_NAME']))
-            self._dataframe.to_sql(self._table, engine, schema='public', if_exists='append', index=False, chunksize = 10)
+            self._dataframe.to_sql(self._table, 
+                                   engine, 
+                                   schema='public', 
+                                   if_exists='append', 
+                                   index=False, 
+                                   chunksize = 10)
             print ('¡Done!')
 
     @property
@@ -103,7 +126,12 @@ class DfToPG(PGToDf):
                                     credentials['DB_IP'], 
                                     credentials['DB_PORT'], 
                                     credentials['DB_NAME']))
-            self._dataframe.to_sql(self._table, engine, schema='public', if_exists='replace', index=False, chunksize = 10)
+            self._dataframe.to_sql(self._table, 
+                                   engine, 
+                                   schema='public', 
+                                   if_exists='replace', 
+                                   index=False, 
+                                   chunksize = 10)
             print ('¡Done!')
 
     @property
@@ -120,34 +148,3 @@ class DfToPG(PGToDf):
             self._dataframe.to_sql(con=engine, name=self._table, if_exists='replace')
             #self._dataframe.to_sql(self._table, engine, schema='public', if_exists='replace', index=False)
             print ('¡Done!')
-
-    @property
-    def decode(self) -> pd.DataFrame():
-        decodeURLs = {'%3D': '=', '%23': '#', '%20': ' ', '%27': '\'', '%22': '\"'}
-        for badchar, decoded in decodeURLs.items():
-            self._dataframe['URL'] = self._dataframe['URL'].apply(lambda x: x.replace(badchar, decoded))
-        print ('decode done!')
-        return self._dataframe
-        
-    @property
-    def encode(self) -> pd.DataFrame():
-        encodeURLs = {'=': '%3D', '#': '%23', ' ': '%20', '\'' : '%27', '\"' : '%22'}
-        for badchar, encoded in encodeURLs.items():
-            self._dataframe['URL'] = self._dataframe['URL'].apply(lambda x: x.replace(badchar, encoded))
-        print ('encode done!')
-        return self._dataframe
-        
-    @property
-    def replace_chars(self):
-        replaceInString = {'á':'a','é':'e','í':'i','ó':'o','ú':'u',
-                       'Á':'A','É':'E','Í':'I','Ó':'O','Ú':'U',
-                       'À':'A','È':'E','Ì':'I','Ò':'O','Ù':'U',
-                       'Ä':'A','Ë':'E','Ï':'I','Ö':'O','Ü':'U',}
-        for column in self._table:
-            for bad_char, normal_char in replaceInString.items():
-                self._dataframe[column] = self._dataframe[column].apply(lambda x: str(x).replace(bad_char, normal_char))
-            # dataframe[column] = dataframe[column].apply(lambda x: str(x).strip())
-        return self._dataframe
-        
-        
-
