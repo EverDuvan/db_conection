@@ -1,7 +1,11 @@
 from PostgresDf import *
 
-#dataframe = PGToDf('retail_information','psql_read').get_df
-#print (f'resultado: {dataframe}')
+dataframe = PGToDf('product_homologated','data_procesing2').get_df
+#print (dataframe)
+#df = dataframe.sort_values(by=["PAÍS", "RETAILER", "CATEGORÍA", "SUBCATEGORÍA"])
+PGToDf.df_2_xl(dataframe,'product_homologated')
+#subida = DfToPG(df,'testeo','data_procesing2').send_df_replace
+#print (dataframe)
 
 #PGToDf().df_2_xl(dataframe,'table')
 
@@ -9,20 +13,20 @@ from PostgresDf import *
 #subida = DfToPG(ready_2_process,'retail_information','data_procesing2')
 #subida.send_df_replace
 
-raw28=PGToDf('raw_scrap28.xlsx').get_xlsx_df
-print (f'cantidad datos en raw_scrap28: {len(raw28)}')
+#raw28=PGToDf('raw_scrap28.xlsx').get_xlsx_df
+#print (f'cantidad datos en raw_scrap28: {len(raw28)}')
 #print (raw28)
 
-raw20=PGToDf('raw_scrap20.xlsx').get_xlsx_df
-print (f'cantidad datos en raw_scrap20: {len(raw20)}')
+#raw20=PGToDf('raw_scrap20.xlsx').get_xlsx_df
+#print (f'cantidad datos en raw_scrap20: {len(raw20)}')
 #print (raw20)
 
 
 # URL en df 'raw28' que NO están en URL del df raw20
 
-filtro1 = raw28 [~raw28['URL'].isin(raw20['URL'])]
-PGToDf.df_2_xl(filtro1 , '28vs20')
-print(f'devisin: {filtro1}')
+#filtro1 = raw28 [~raw28['URL'].isin(raw20['URL'])]
+#PGToDf.df_2_xl(filtro1 , '28vs20')
+#print(f'devisin: {filtro1}')
 
 #homologadosdf= PGToDf( 'homologados','data_procesing2')
 #homologadosdf=homologadosdf.get_df

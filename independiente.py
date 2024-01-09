@@ -5,7 +5,9 @@ x = 'raw_scrap20.xlsx'
 y = 'raw_scrap28.xlsx'
 
 def xltodf(xlsxfile):
-    df = pd.read_excel(xlsxfile , engine='openpyxl', na_filter = False)
+    df = pd.read_excel(xlsxfile, 
+                       engine='openpyxl', 
+                       na_filter = False)
     print (f'cantidad datos en {xlsxfile} : {len(df)}')
     #print (df)
     return df

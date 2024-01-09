@@ -18,10 +18,7 @@ class PGToDf:
         self._column = column
         
     def __str__(self):
-        return f'\ndatabase: 
-        {self._credentials}\ndb table: 
-        {self._table}\ntable columns: 
-        {self._column}'
+        return f'\ndatabase: {self._credentials}\ndb table: {self._table}\ntable columns: {self._column}'
     
     @property
     def get_df(self):
@@ -55,13 +52,6 @@ class PGToDf:
             print('File not found')
             df = pd.DataFrame()
         return df
-
-    @property
-    def get_secret(secret_file: str) -> str:
-        path = f'/run/secrets/{secret_file}'
-        with open(path) as f:
-            secret = f.readline().strip()
-        return secret
 
     @staticmethod
     def df_2_xl(df,table=''):
@@ -112,7 +102,7 @@ class DfToPG(PGToDf):
                                    schema='public', 
                                    if_exists='append', 
                                    index=False, 
-                                   chunksize = 10)
+                                   chunksize = 100)
             print ('¡Done!')
 
     @property
@@ -131,7 +121,7 @@ class DfToPG(PGToDf):
                                    schema='public', 
                                    if_exists='replace', 
                                    index=False, 
-                                   chunksize = 10)
+                                   chunksize = 100)
             print ('¡Done!')
 
     @property
