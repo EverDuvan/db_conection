@@ -1,34 +1,48 @@
-import pandas as pd 
-import openpyxl
+import pandas as pd
+from sqlalchemy.engine import create_engine
+from dotenv import load_dotenv
+import os
+load_dotenv()
+import datetime
 
-x = 'raw_scrap20.xlsx'
-y = 'raw_scrap28.xlsx'
+now = datetime.datetime.now()
+data = {'fecha': [now.strftime('%Y-%m-%d')],
+        'hora': [now.strftime('%H:%M:%S')]}
+df = pd.DataFrame(data)
+print(df)
 
-def xltodf(xlsxfile):
-    df = pd.read_excel(xlsxfile, 
-                       engine='openpyxl', 
-                       na_filter = False)
-    print (f'cantidad datos en {xlsxfile} : {len(df)}')
-    #print (df)
+def get_df(db: str, table, column=[]):
+    """
+    [get dataframe from postgres]
+    return: pandas-df
+    """
+    a = eval(os.getenv("DB"))
+    db=a[db]
+    engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format
+                           (db['DB_USER'], 
+                            db['DB_PASS'], 
+                            db['DB_IP'], 
+                            db['DB_PORT'], 
+                            db['DB_NAME']))
+    query= f'SELECT * from {table}'
+    df = pd.read_sql_query(query, engine)
+    if column != []:
+        df=df[column]
     return df
 
-def df_2_xl(df,table):
-    full_path = f'{table}.xlsx'
-    with pd.ExcelWriter(full_path,
-                        engine='xlsxwriter',
-                        engine_kwargs={'options':{'strings_to_urls': False}}) as writer:
-        df.to_excel(writer,index=False)
+def get_xlsx_df(table):
+      if table != '':
+        df = pd.read_excel(table, engine='openpyxl', na_filter = False)
+      else:
+        print('File not found')
+        df = pd.DataFrame()
+      return df
 
-x = xltodf(x)
-y = xltodf(y)
+if __name__ == '__main__':
+    df = get_xlsx_df('filtro.xlsx')
+    print (df)
 
-filtro = y [~y['URL'].isin(x['URL'])] # URL en df 'y' que NO están en URL del df 'x'
-df_2_xl(filtro , 'filtro')
-print (f'cantidad datos en filtro : {len(filtro)}')
-#print(f'filtro : {filtro}')
-
-filtro2 = x [~x['URL'].isin(y['URL'])] # URL en df 'y' que NO están en URL del df 'x'
-df_2_xl(filtro2 , 'filtro2')
-print (f'cantidad datos en filtro2 : {len(filtro2)}')
-#print(f'filtro : {filtro}')
-
+    lista = ['COLOMBIA', '3311']
+    #df_filtrado = df[df['PAIS'].isin(lista)]
+    df_filtrado = df[df.apply(lambda row: row.astype(str).str.contains('|'.join(lista)).any(), axis=1)]
+    print (f'filtrado: \n {df_filtrado}')
