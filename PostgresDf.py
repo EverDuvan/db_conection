@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 import xlsxwriter
 import openpyxl
+from tqdm import tqdm
 load_dotenv()
 
 class PGToDf:
@@ -72,6 +73,79 @@ class PGToDf:
                             engine_kwargs={'options':{'strings_to_urls': False}}) as writer:
             df.to_excel(writer,index=False)
             print ('\nxlsx created !')
+
+    @property
+    def pg_to_excel_chunk(self, table='', chunk_size=5000):
+        """
+        [get dataframe from postgres and save to xlsx]
+        parameter
+        ---------
+        table: str
+            table name in postgres 
+        chunk_size: int
+            The number of rows per chunk
+        """
+        # Get database credentials
+        a = eval(os.getenv("basesdedatos"))
+        credentials=a[self._credentials]
+        engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format
+                            (credentials['DB_USER'], 
+                                credentials['DB_PASS'], 
+                                credentials['DB_IP'], 
+                                credentials['DB_PORT'], 
+                                credentials['DB_NAME']))
+        query= f'SELECT * from {self._table}'
+
+        # Prepare Excel writer
+        if table == '':
+            table = 'file'
+        full_path = f'{table}.xlsx'
+        writer = pd.ExcelWriter(full_path, engine='xlsxwriter', engine_kwargs={'options':{'strings_to_urls': False}})
+
+        # Get the total number of rows in the table for the progress bar
+        row_count_query = f'SELECT COUNT(*) from {self._table}'
+        row_count = pd.read_sql_query(row_count_query, engine).values[0][0]
+
+        # Initialize progress bar
+        pbar = tqdm(total=row_count)
+
+        # Initialize startrow
+        startrow = 0
+
+        # Read and write data in chunks
+        for chunk in pd.read_sql_query(query, engine, chunksize=chunk_size):
+            if self._column != []:
+                chunk=chunk[self._column]
+            # Convert datetimes to timezone unaware
+            for col in chunk.select_dtypes(include=['datetime64[ns, UTC]', 'datetime64[ns]']).columns:
+                chunk[col] = chunk[col].dt.tz_convert(None)
+            chunk.to_excel(writer, index=False, startrow=startrow)
+            
+            # Update startrow for next chunk
+            startrow += chunk_size
+
+            # Update progress bar
+            pbar.update(chunk_size)
+
+        # Save Excel file
+        writer.close()
+        print ('\nxlsx created !')
+
+        # Close progress bar
+        pbar.close()
+
+    @property
+    def get_xlsx_df(self):
+        """
+        [get dataframe from xlsx]
+        return: pandas-df
+        """
+        if self._table != '':
+            df = pd.read_excel(self._table, engine='openpyxl', na_filter = False)
+        else:
+            print('File not found')
+            df = pd.DataFrame()
+        return df
 
  
 # ************************** DfToPg *********************************

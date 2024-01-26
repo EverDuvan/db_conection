@@ -1,9 +1,12 @@
 from PostgresDf import *
 
-dataframe = PGToDf('product_homologated','data_procesing2').get_df
+#dataframe = PGToDf('product_homologated','data_procesing2').get_df
+
+dataframe = PGToDf('app_hitchmodel','dev').pg_to_excel_chunk
+
 #print (dataframe)
 #df = dataframe.sort_values(by=["PAÍS", "RETAILER", "CATEGORÍA", "SUBCATEGORÍA"])
-PGToDf.df_2_xl(dataframe,'product_homologated')
+#PGToDf.df_2_xl(dataframe,'product_homologated')
 #subida = DfToPG(df,'testeo','data_procesing2').send_df_replace
 #print (dataframe)
 

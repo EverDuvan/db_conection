@@ -8,3 +8,4 @@ cryptography
 XlsxWriter
 python-dotenv
 openpyxl
+pqdm
