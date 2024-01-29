@@ -1,28 +1,22 @@
 {
-"dev" :
-{"DB_USER":"en",
-"DB_PASS":"0000",
-"DB_IP":"localhost",
-"DB_PORT":"5432",
-"DB_NAME":"dev"},
-
-"data_procesing2" :
-{"DB_USER":"ev",
-"DB_PASS":"00000",
-"DB_IP":"localhost",
-"DB_NAME":"data_procesing2"},
-
-"django_db" :
+"db_01" :
 {"DB_USER":"usuario",
+"DB_PASS":"000000",
+"DB_IP":"host",
+"DB_PORT":"5432",
+"DB_NAME":"db_name"},
+
+"db_02" :
+{"DB_USER":"usuario_02",
+"DB_PASS":"000000",
+"DB_IP":"host",
+"DB_PORT":"5432",
+"DB_NAME":"db_name_02"},
+
+"db_03" :
+{"DB_USER":"usuario_03",
 "DB_PASS":"0000",
 "DB_IP":"111.111.11.1",
 "DB_PORT":"5433",
-"DB_NAME":"base_de_datos_03"},
-
-"psql_read" : 
-{"DB_USER":"usuario",
-"DB_PASS":"0000",
-"DB_IP":"111.111.11.1",
-"DB_PORT":"5432",
-"DB_NAME":"base_de_datos_03"
-}}
+"DB_NAME":"base_de_datos_03"}
+}
