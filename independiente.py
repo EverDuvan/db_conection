@@ -32,12 +32,13 @@ def get_df_from_db(cred: str, db: str, table: str, column: str =[]):
     if column != []:
         df=df[column]
         
-    # Agregamos la barra de progreso aquí
-    for index, row in tqdm(df.iterrows(), total=len(df)):
-          continue
+# Agregamos la barra de progreso aquí (comentar las 2 líneas siguientes si no se necesita la barra de progreso)
+    # for index, row in tqdm(df.iterrows(), total=len(df)):
+          # continue
     return df
 
-def get_xlsx_df(table): # table : excel file
+def get_xlsx_df(table): 
+        """table : excel file"""
         if table != '':
                 df = pd.read_excel(table, engine='openpyxl', na_filter = False)
         else:
@@ -45,7 +46,7 @@ def get_xlsx_df(table): # table : excel file
                 df = pd.DataFrame()
         return df
 
-def df_2_xl(df,table=''):
+def df_2_xl(df: pd.DataFrame ,table=''):
         if table == '':
                 table = 'file'
         full_path = f'{table}.xlsx'
@@ -53,21 +54,18 @@ def df_2_xl(df,table=''):
                         engine='xlsxwriter',
                         engine_kwargs={'options':{'strings_to_urls': False}}) as writer:
               df.to_excel(writer,index=False)
-        print ('\nxlsx created !')
+              print ('\nxlsx created !')
 
-
-def pg_to_excel_chunk(column, cred, table='', chunk_size=5000):
+def pg_to_excel_chunk(cred: str, db: str, table: str, column: str =[], chunk_size=5000):
         with open(cred, 'r') as f:
               data = json.load(f)
         engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format
-                                (data["db_01"]["DB_USER"],
-                                data["db_01"]["DB_PASS"],
-                                data["db_01"]['DB_IP'], 
-                                data["db_01"]['DB_PORT'], 
-                                data["db_01"]['DB_NAME']))
+                                (data[db]["DB_USER"],
+                                data[db]["DB_PASS"],
+                                data[db]['DB_IP'], 
+                                data[db]['DB_PORT'], 
+                                data[db]['DB_NAME']))
         query= f'SELECT * from {table}'
-        if table == '':
-              table = 'file'
         full_path = f'{table}.xlsx'
         writer = pd.ExcelWriter(full_path, engine='xlsxwriter', engine_kwargs={'options':{'strings_to_urls': False}})
         # Get the total number of rows in the table for the progress bar
@@ -95,23 +93,19 @@ def pg_to_excel_chunk(column, cred, table='', chunk_size=5000):
         # Close progress bar
         pbar.close()
 
-def get_xlsx_df(table):
-      if table != '':
-        df = pd.read_excel(table, engine='openpyxl', na_filter = False)
-      else:
-        print('File not found')
-        df = pd.DataFrame()
-      return df
 
-def send_df_append(dataframe, table, cred):
+# cred: str, db: str, table: str
+
+
+def send_df_append(dataframe: pd.DataFrame, cred: str, db: str, table: str):
         with open(cred, 'r') as f:
               data = json.load(f)
         engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format
-                                   (data["db_01"]["DB_USER"],
-                                    data["db_01"]["DB_PASS"],
-                                    data["db_01"]['DB_IP'], 
-                                    data["db_01"]['DB_PORT'], 
-                                    data["db_01"]['DB_NAME']))
+                                   (data[db]["DB_USER"],
+                                    data[db]["DB_PASS"],
+                                    data[db]['DB_IP'], 
+                                    data[db]['DB_PORT'], 
+                                    data[db]['DB_NAME']))
         dataframe.to_sql(table,
                         engine,
                         schema='public', 
@@ -120,7 +114,7 @@ def send_df_append(dataframe, table, cred):
                         chunksize = 100)
         print ('¡Done!')
 
-def send_df_replace(dataframe, table, cred, db):
+def send_df_replace(dataframe: pd.DataFrame, cred: str, db: str, table: str):
         with open(cred, 'r') as f:
                 data = json.load(f)
         engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format
@@ -138,5 +132,14 @@ def send_df_replace(dataframe, table, cred, db):
         print ('¡Done!')
 
 
-df = get_df_from_db2('cred.json', 'db_02', 'homologados', ['URL', 'subcategory_id'])
-print (df)
+# print(get_df_from_db('cred.json', 'db_02', 'homologados', ['URL', 'subcategory_id']))
+        
+# print (get_xlsx_df('filtro.xlsx'))
+        
+# df_2_xl(time_df(), 'test')
+
+# pg_to_excel_chunk('cred.json', 'db_02', 'homologados', ['URL', 'subcategory_id'], chunk_size=5000)
+        
+# send_df_append(time_df(), 'cred.json', 'db_02', 'test')
+
+send_df_replace(time_df(), 'cred.json', 'db_02', 'test')
