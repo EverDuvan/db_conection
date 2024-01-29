@@ -12,10 +12,25 @@ data = {'fecha': [now.strftime('%Y-%m-%d')],
 df = pd.DataFrame(data)
 print(df)
 
+def time_df():
+    now = datetime.datetime.now()
+    data = {'fecha': [now.strftime('%Y-%m-%d')],
+            'hora': [now.strftime('%H:%M:%S')]}
+    df = pd.DataFrame(data)
+    return df
 
-# Abre el archivo JSON
+
+print(time_df())
+
+
+
+"""
 with open('cred.json', 'r') as f:
     data = json.load(f)
-
 # Ahora puedes acceder a los datos en el diccionario
-print(data["dev"]["DB_USER"])  # Salida: everduvan
+print(data["db_01"]["DB_USER"],
+            data["db_01"]['DB_PASS'],
+            data["db_01"]['DB_IP'], 
+            data["db_01"]['DB_PORT'], 
+            data["db_01"]['DB_NAME'])
+"""
