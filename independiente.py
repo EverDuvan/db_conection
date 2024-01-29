@@ -94,9 +94,6 @@ def pg_to_excel_chunk(cred: str, db: str, table: str, column: str =[], chunk_siz
         pbar.close()
 
 
-# cred: str, db: str, table: str
-
-
 def send_df_append(dataframe: pd.DataFrame, cred: str, db: str, table: str):
         with open(cred, 'r') as f:
               data = json.load(f)
@@ -131,15 +128,11 @@ def send_df_replace(dataframe: pd.DataFrame, cred: str, db: str, table: str):
                          chunksize = 100)
         print ('¡Done!')
 
-
-# print(get_df_from_db('cred.json', 'db_02', 'homologados', ['URL', 'subcategory_id']))
-        
-# print (get_xlsx_df('filtro.xlsx'))
-        
-# df_2_xl(time_df(), 'test')
-
-# pg_to_excel_chunk('cred.json', 'db_02', 'homologados', ['URL', 'subcategory_id'], chunk_size=5000)
-        
-# send_df_append(time_df(), 'cred.json', 'db_02', 'test')
-
-send_df_replace(time_df(), 'cred.json', 'db_02', 'test')
+if __name__ == "__main__":
+       
+    # print(get_df_from_db('cred.json', 'db_02', 'homologados', ['URL', 'subcategory_id']))
+    print (get_xlsx_df('filtro.xlsx'))
+    # df_2_xl(time_df(), 'test')
+    # pg_to_excel_chunk('cred.json', 'db_02', 'homologados', ['URL', 'subcategory_id'], chunk_size=5000)
+    # send_df_append(time_df(), 'cred.json', 'db_02', 'test')
+    # send_df_replace(time_df(), 'cred.json', 'db_02', 'test')
