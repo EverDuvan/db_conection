@@ -6,12 +6,6 @@ import os
 load_dotenv()
 import datetime
 
-now = datetime.datetime.now()
-data = {'fecha': [now.strftime('%Y-%m-%d')],
-        'hora': [now.strftime('%H:%M:%S')]}
-df = pd.DataFrame(data)
-print(df)
-
 def time_df():
     now = datetime.datetime.now()
     data = {'fecha': [now.strftime('%Y-%m-%d')],
@@ -19,18 +13,17 @@ def time_df():
     df = pd.DataFrame(data)
     return df
 
+def send_df_replace_mysql(df, cred: str, db, table):
+    with open(cred , 'r') as f:
+          data = json.load(f)
+          engine = create_engine('mysql+mysqlconnector://{}:{}@{}/{}'.format
+                                 (data[db]["DB_USER"],
+                                  data[db]["DB_PASS"],
+                                  data[db]['DB_IP'],
+                                  data[db]['DB_NAME']))
+          df.to_sql(con=engine, name=table, if_exists='replace')
+          print ('¡Done!')
 
-print(time_df())
-
-
-
-"""
-with open('cred.json', 'r') as f:
-    data = json.load(f)
-# Ahora puedes acceder a los datos en el diccionario
-print(data["db_01"]["DB_USER"],
-            data["db_01"]['DB_PASS'],
-            data["db_01"]['DB_IP'], 
-            data["db_01"]['DB_PORT'], 
-            data["db_01"]['DB_NAME'])
-"""
+df = time_df()
+print (df)
+send_df_replace_mysql(df, 'cred.json', 'db_03', 'test')

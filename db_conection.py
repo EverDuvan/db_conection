@@ -1,6 +1,8 @@
+import logging
+from sqlalchemy import create_engine
+from sqlalchemy.engine import create_engine
 import hashlib
 import pandas as pd
-from sqlalchemy.engine import create_engine
 import os
 import xlsxwriter
 import openpyxl
@@ -15,7 +17,7 @@ def time_df():
     df = pd.DataFrame(data)
     return df
 
-def get_df_from_db(cred: str, db: str, table: str, column: str =[]):
+def get_df_from_db(cred: str, db: str, table: str, column: list =[]):
     """cred: json file name, db: db name, table: table name, column: list of columns to select
     return: pandas-df
     """
@@ -128,11 +130,37 @@ def send_df_replace(dataframe: pd.DataFrame, cred: str, db: str, table: str):
                          chunksize = 100)
         print ('¡Done!')
 
+# mysql
+
+def send_df_replace_mysql(df: pd.DataFrame, cred: str, db: str, table: str, chunksize: int = 500):
+    logger = logging.getLogger(__name__)
+    try:
+        with open(cred , 'r') as f:
+            data = json.load(f)
+            engine = create_engine('mysql+mysqlconnector://{}:{}@{}/{}'.format
+                                    (data[db]["DB_USER"],
+                                    data[db]["DB_PASS"],
+                                    data[db]['DB_IP'],
+                                    data[db]['DB_NAME']))
+            # Divide el DataFrame en trozos y escribe cada trozo en la base de datos por separado
+            for i in range(0, len(df), chunksize):
+                df[i:i+chunksize].to_sql(con=engine, name=table, if_exists='append')
+            logger.info('¡Done!')
+    except Exception as e:
+        logger.error(f"Failed to write DataFrame to MySQL: {e}")
+    finally:
+        if engine:
+            engine.dispose()
+
+
+
 if __name__ == "__main__":
        
     # print(get_df_from_db('cred.json', 'db_02', 'homologados', ['URL', 'subcategory_id']))
-    print (get_xlsx_df('filtro.xlsx'))
+    # print (get_xlsx_df('filtro.xlsx'))
     # df_2_xl(time_df(), 'test')
-    # pg_to_excel_chunk('cred.json', 'db_02', 'homologados', ['URL', 'subcategory_id'], chunk_size=5000)
+    # pg_to_excel_chunk('cred.json', 'db_02', 'homologados', chunk_size=5000)
     # send_df_append(time_df(), 'cred.json', 'db_02', 'test')
-    # send_df_replace(time_df(), 'cred.json', 'db_02', 'test')
+    df = get_xlsx_df('raw_scrap_crawling.xlsx')
+    df = df.assign(SEGMENTO6 = df['SEGMENTO4'], SEGMENTO7 = df['SEGMENTO5'])
+    send_df_replace_mysql(df, 'cred.json', 'db_03', 'product_details')

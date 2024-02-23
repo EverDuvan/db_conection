@@ -208,7 +208,5 @@ class DfToPG(PGToDf):
                                     credentials['DB_PASS'], 
                                     credentials['DB_IP'], 
                                     credentials['DB_NAME']))
-            #engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(credentials['DB_USER'], credentials['DB_PASS'], credentials['DB_IP'], credentials['DB_PORT'], credentials['DB_NAME']))
             self._dataframe.to_sql(con=engine, name=self._table, if_exists='replace')
-            #self._dataframe.to_sql(self._table, engine, schema='public', if_exists='replace', index=False)
             print ('¡Done!')
