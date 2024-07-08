@@ -2,7 +2,7 @@ from PostgresDf import *
 
 #dataframe = PGToDf('product_homologated','data_procesing2').get_df
 
-dataframe = PGToDf('app_hitchmodel','dev').pg_to_excel_chunk
+dataframe = PGToDf('prueba','prueba').pg_to_excel_chunk
 
 #print (dataframe)
 #df = dataframe.sort_values(by=["PAÍS", "RETAILER", "CATEGORÍA", "SUBCATEGORÍA"])
