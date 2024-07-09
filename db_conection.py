@@ -35,8 +35,8 @@ def get_df_from_db(cred: str, db: str, table: str, column: list =[]):
         df=df[column]
         
 # Agregamos la barra de progreso aquí (comentar las 2 líneas siguientes si no se necesita la barra de progreso)
-    # for index, row in tqdm(df.iterrows(), total=len(df)):
-          # continue
+    for index, row in tqdm(df.iterrows(), total=len(df)):
+         continue
     return df
 
 def get_xlsx_df(table): 
