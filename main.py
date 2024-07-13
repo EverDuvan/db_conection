@@ -1,8 +1,11 @@
 from PostgresDf import *
 
 #dataframe = PGToDf('product_homologated','data_procesing2').get_df
+#dataframe = PGToDf('prueba','prueba').pg_to_excel_chunk
 
-dataframe = PGToDf('prueba','prueba').pg_to_excel_chunk
+raw28=PGToDf('filtro2.xlsx').get_xlsx_df
+print (f'cantidad datos en raw_scrap: {len(raw28)}')
+subida = DfToPG(raw28,'testeo02','db_01').send_df_replace
 
 #print (dataframe)
 #df = dataframe.sort_values(by=["PAÍS", "RETAILER", "CATEGORÍA", "SUBCATEGORÍA"])
